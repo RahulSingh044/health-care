@@ -31,7 +31,7 @@ function UpperNavbar() {
 
     return (
         <div className='w-full flex justify-between items-center py-4 px-40 bg-white border-b-2 border-gray-200'>
-            <div className='text-2xl flex items-center space-x-4 font-semibold font-serif'>
+            <div className='text-2xl flex items-center space-x-4 font-semibold font-serif cursor-pointer' onClick={() => router.push("/")}>
                 <Shield className='text-teal-500' /> MediLink
             </div>
             <div className='flex items-center space-x-4'>

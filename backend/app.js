@@ -27,9 +27,11 @@ app.use(cors({
 const authRoutes = require('./router/auth');
 const profileRoutes = require('./router/profile');
 const recordsRoutes = require('./router/records');
+const contactRoutes = require('./router/contactForm');
 app.use('/api/auth', authRoutes);
 app.use('/api/profile', profileRoutes);
 app.use('/api/records', recordsRoutes);
+app.use('/api/contact', contactRoutes);
 
 // Set port and start server
 const PORT = process.env.PORT || 8080;

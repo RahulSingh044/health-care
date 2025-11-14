@@ -8,16 +8,16 @@ const medicalRecordSchema = new mongoose.Schema({
     },
     recordType: {
         type: String,
-        required: true,
+        // required: true,
         enum: ['lab_report', 'prescription', 'discharge_summary', 'xray', 'scan', 'other']
     },
     date: {
         type: String,
-        required: true
+        // required: true
     },
     title: {
         type: String,
-        required: true,
+        // required: true,
         trim: true
     },
     description: {
@@ -26,21 +26,21 @@ const medicalRecordSchema = new mongoose.Schema({
     },
     fileUrl: {
         type: String,
-        required: true
+        // required: true
     },
     fileName: {
         type: String,
-        required: true
+        // required: true
     },
     fileType: {
         type: String,
-        required: true,
+        // required: true,
         // Allowed file types as per the form
         enum: ['pdf', 'jpg', 'jpeg', 'png', 'doc', 'docx']
     },
     fileSize: {
         type: Number,  // in bytes
-        required: true,
+        // required: true,
         max: 10 * 1024 * 1024  // 10MB max as specified in the form
     },
     uploadedAt: {

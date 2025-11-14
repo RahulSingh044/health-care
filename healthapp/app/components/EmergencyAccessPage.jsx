@@ -18,7 +18,8 @@ function EmergencyAcessPage() {
 
     const qrRef = useRef();
 
-    const accessLink = `https://my-health-app-mu.vercel.app/emergencyAccess/${accessKey}`
+    const accessLink = `http://localhost:3000/emergencyAccess/${accessKey}`
+    // const accessLink = `https://my-health-app-mu.vercel.app/emergencyAccess/${accessKey}`
 
     const downloadQR = () => {
         const canvas = qrRef.current; 

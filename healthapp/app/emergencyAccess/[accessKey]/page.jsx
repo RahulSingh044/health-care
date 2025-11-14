@@ -369,6 +369,12 @@ export default function EmergencyAccessPage() {
           )}
         </section>
 
+        <button className="px-4 py-2 flex items-center gap-2 bg-teal-600 text-white font-medium rounded-lg shadow hover:bg-teal-700 transition">
+  <span className="text-lg font-bold">+</span>
+  Add Medications
+</button>
+
+
         <div className="text-center text-sm text-gray-400 pt-4 border-t border-gray-100">
           Last updated securely via <span className="font-semibold text-teal-500">MediLink</span> © 2025
         </div>
