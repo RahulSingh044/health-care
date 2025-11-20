@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import axios from "axios";
 
 export async function verifyFromExternalAPI(url) {
@@ -18,6 +18,6 @@ export async function verifyFromExternalAPI(url) {
     return data.success || data.valid || false;
   } catch (error) {
     console.error("API check failed:", error.response?.status || error.message);
-    return false;
-  }
+    return false;
+  }
 }

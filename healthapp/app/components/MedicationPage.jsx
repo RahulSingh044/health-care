@@ -176,7 +176,7 @@ function MedicationPage() {
                 Prescribed Medication Records
               </h1>
               <PrescribedRecordsTable
-                records={medList}
+                records={medList.filter((r) => r.uploadedBy === "Patient")}
                 onDelete={(id) =>
                   setMedList((prev) => prev.filter((r) => r._id !== id))
                 }
@@ -185,7 +185,7 @@ function MedicationPage() {
                 Prescribed Medication Records by Doctor
               </h1>
               <PrescribedRecordsTable
-                records={medList}
+                records={medList.filter((r) => r.uploadedBy === "Doctor")}
                 onDelete={(id) =>
                   setMedList((prev) => prev.filter((r) => r._id !== id))
                 }

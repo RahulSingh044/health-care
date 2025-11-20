@@ -13,7 +13,7 @@ function EmergencyAcessPage() {
     const [copied, setCopied] = useState(false);
     const [isEmergencyOpen, setIsEmergencyOpen] = useState(false);
     const [isVisiblePassword, setIsVisiblePassword] = useState(false);
-    const [accessKey, setAccessKey] = useState("");4
+    const [accessKey, setAccessKey] = useState("");
     const [qrvalue, setQrValue] = useState("");
 
     const qrRef = useRef();

@@ -7,6 +7,7 @@ const archiver = require("archiver");
 const MedicalRecord = require("../models/medicalRecord");
 const verifyUser = require("../middleware/verifyUser");
 const PrescribedRecord = require("../models/prescribedRecord");
+const EmergencyAccessKey = require("../models/emergencyAccessKey");
 
 // Create storage directory if it doesn't exist
 const storageDir = path.join(__dirname, "../storage");
@@ -223,13 +224,11 @@ router.get("/medical-record/file/:id", async (req, res) => {
     stream.pipe(res);
   } catch (error) {
     console.error("Error serving file:", error);
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "Error serving file",
-        error: error.message,
-      });
+    res.status(500).json({
+      success: false,
+      message: "Error serving file",
+      error: error.message,
+    });
   }
 });
 
@@ -344,6 +343,85 @@ router.post(
   }
 );
 
+//upload prescribed by doctor
+router.post(
+  "/prescribed-record/upload/doctor",
+  upload.single("file"),
+  async (req, res) => {
+    try {
+      const accessKey = req.body.accessKey;
+      const description = req.body.description;
+
+      if (!accessKey) {
+        return res.status(400).json({
+          success: false,
+          message: "Access key missing",
+        });
+      }
+
+      //  Find the access key in DB
+      const accessData = await EmergencyAccessKey.findOne({ accessKey });
+
+      if (!accessData) {
+        return res.status(401).json({
+          success: false,
+          message: "Invalid or expired access key",
+        });
+      }
+
+      const userId = accessData.userId;
+      // Check for file validation error
+      if (req.fileValidationError) {
+        return res.status(400).json({
+          success: false,
+          message: req.fileValidationError,
+        });
+      }
+
+      const file = req.file;
+      if (!file) {
+        return res.status(400).json({
+          success: false,
+          message: "No file uploaded",
+        });
+      }
+
+      const prescribedRecord = new PrescribedRecord({
+        userId: userId,
+        description: description || null,
+        fileUrl: file.filename,
+        fileName: file.originalname,
+        fileType: path.extname(file.originalname).substring(1),
+        fileSize: file.size,
+        uploadedBy: "Doctor",
+      });
+
+      await prescribedRecord.save();
+
+      res.status(201).json({
+        success: true,
+        message: "Prescription uploaded successfully",
+        data: prescribedRecord,
+      });
+    } catch (error) {
+      // Delete uploaded file if saving fails
+      if (req.file) {
+        try {
+          fs.unlinkSync(req.file.path);
+        } catch (e) {
+          /* ignore */
+        }
+      }
+
+      res.status(500).json({
+        success: false,
+        message: "Error uploading prescription",
+        error: error.message,
+      });
+    }
+  }
+);
+
 // Update (replace) a prescription image
 // Accepts optional new file (field name 'file'); if provided replaces the stored file.
 router.put(
@@ -371,12 +449,10 @@ router.put(
             fs.unlinkSync(req.file.path);
           } catch (e) {}
         }
-        return res
-          .status(403)
-          .json({
-            success: false,
-            message: "Unauthorized to update this record",
-          });
+        return res.status(403).json({
+          success: false,
+          message: "Unauthorized to update this record",
+        });
       }
 
       // If a new file uploaded, delete old file and update fields
@@ -425,7 +501,7 @@ router.put(
 router.get("/prescribed-record/all", verifyUser, async (req, res) => {
   try {
     const records = await PrescribedRecord.find({ userId: req.userId })
-      .select("fileUrl fileName fileType fileSize createdAt _id")
+      .select("fileUrl fileName fileType fileSize createdAt _id uploadedBy")
       .sort({ createdAt: -1 });
 
     res.status(200).json({
@@ -481,13 +557,11 @@ router.get("/prescribed-record/file/:id", async (req, res) => {
     });
     stream.pipe(res);
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "Error serving file",
-        error: error.message,
-      });
+    res.status(500).json({
+      success: false,
+      message: "Error serving file",
+      error: error.message,
+    });
   }
 });
 
