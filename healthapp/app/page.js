@@ -17,6 +17,11 @@ import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 import { Label } from "./ui/label";
 import { useState } from "react";
+import axios from "axios";
+import toast from 'react-hot-toast';
+import Login from "./components/Login";
+import SignUp from "./components/SignUp.jsx";
+import OTP from "./components/verifyOTP";
 
 const steps = [
   {
@@ -75,6 +80,10 @@ const faqs = [
 ];
 
 export default function Home() {
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [isSignUpOpen, setIsSignUpOpen] = useState(false);
+  const [isOtpOpen, setIsOtpOpen] = useState(false);
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -94,22 +103,24 @@ export default function Home() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    // console.log("hii");
 
     try {
-      const res = await axios.post("/api/contact", formData);
-      console.log("res = ", res);
-      if (!res.ok) throw new Error("Failed to send message");
+      const res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/api/contact/send`, formData);
+      
+      console.log(res);
+      if (res.status === 200 || res.data.success) { 
+          setFormData({
+            name: "",
+            email: "",
+            subject: "",
+            message: "",
+          });
+          toast.success("Message sent successfully!");
+      }
 
-      // Clear form
-      setFormData({
-        name: "",
-        email: "",
-        subject: "",
-        message: "",
-      });
     } catch (err) {
-      console.log(err)
+      console.error(err);
+      toast.error(err.response?.data?.error || "Failed to send message");
     } finally {
       setLoading(false);
     }
@@ -134,17 +145,17 @@ export default function Home() {
             Manage your medical records, connect with care, and stay safe with{" "}
             <br /> MyHealthRecord
           </p>
-          <button className="mt-6 bg-teal-500 font-semibold tracking-wider text-lg text-white px-8 py-4 rounded-full hover:bg-teal-700 transition-all duration-300 w-56">
+          <button onClick={() => setIsLoginOpen(true)} className="mt-6 bg-teal-500 font-semibold tracking-wider text-lg text-white px-8 py-4 rounded-full hover:bg-teal-700 transition-all duration-300 w-56">
             {" "}
             Get Started Free{" "}
           </button>
-          <p className="mt-3">
+          {/* <p className="mt-3">
             Already a member?
             <span className="text-teal-500 font-semibold cursor-pointer hover:underline">
               {" "}
               Login
             </span>
-          </p>
+          </p> */}
         </div>
 
         <div className="w-2/5 bg-white flex flex-col rounded-xl p-10 shadow-2xl">
@@ -597,13 +608,38 @@ export default function Home() {
             favourite info is digitalized and foreseeable, especially,{" "}
             <span className="text-teal-400">Highly Recommended!</span>
           </p>
-          <button className="mt-4 bg-teal-600 text-white px-6 py-2 rounded-full shadow-2xl hover:-translate-y-1 transition-all duration-300">
+          <button onClick={() => setIsSignUpOpen(true)} className="mt-4 bg-teal-600 text-white px-6 py-2 rounded-full shadow-2xl hover:-translate-y-1 transition-all duration-300">
             Signup Now
           </button>
         </div>
       </div>
 
       <Footer />
+      {/* Modals */}
+      <Login
+        isOpen={isLoginOpen}
+        onClose={() => setIsLoginOpen(false)}
+        onSwitchToSignUp={() => {
+          setIsLoginOpen(false);
+          setIsSignUpOpen(true);
+        }}
+      />
+
+      <SignUp
+        isOpen={isSignUpOpen}
+        onClose={() => setIsSignUpOpen(false)}
+        onSwitchToLogin={() => {
+          setIsSignUpOpen(false);
+          setIsLoginOpen(true);
+        }}
+        onOpenOtp={() => setIsOtpOpen(true)}
+      />
+
+      <OTP
+        isOpen={isOtpOpen}
+        onClose={() => setIsOtpOpen(false)}
+        onOpenLogin={() => setIsLoginOpen(true)}
+      />
     </div>
   );
 }
