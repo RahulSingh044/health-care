@@ -10,7 +10,6 @@ import PrescribedRecordsTable from "../components/PrescribedRecordsTable";
 import toast from "react-hot-toast";
 import axios from "axios";
 import UpperNavbar from "../patient/_components/UpperNavbar";
-import { backendUrl } from "../actions/auth";
 
 function MedicationPage() {
   const [activeSection, setActiveSection] = useState("Medication Prescribed");
@@ -23,7 +22,7 @@ function MedicationPage() {
     const getMed = async () => {
       try {
         const res = await axios.get(
-          `${backendUrl}/api/records/prescribed-record/all`,
+          `/api/records/prescribed-record/all`,
           { withCredentials: true }
         );
         if (res.data.success) {

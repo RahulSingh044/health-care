@@ -22,7 +22,6 @@ import toast from 'react-hot-toast';
 import Login from "./components/Login";
 import SignUp from "./components/SignUp.jsx";
 import OTP from "./components/verifyOTP";
-import { backendUrl } from "./actions/auth";
 
 const steps = [
   {
@@ -106,7 +105,7 @@ export default function Home() {
     setLoading(true);
 
     try {
-      const res = await axios.post(`${backendUrl}/api/contact/send`, formData);
+      const res = await axios.post(`/api/contact/send`, formData);
       
       console.log(res);
       if (res.status === 200 || res.data.success) { 
